@@ -1,12 +1,20 @@
 import { ThemedText } from '@/components/ThemedText';
+import { borderRadius, shadows, spacing, typography } from '@/constants/Theme';
+import { useTheme } from '@/hooks/useTheme';
+import { healthKitService } from '@/services/HealthKitService';
 import { useCalorieStore } from '@/store/calorieStore';
 import { formatDate } from '@/utils/dateUtils';
-import React, { useState } from 'react';
-import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Dimensions, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const [calorieInput, setCalorieInput] = useState('');
+  const [healthData, setHealthData] = useState<any>(null);
+  const theme = useTheme();
+  
   const { 
     getDailyCalories, 
     addDailyCalories, 
@@ -25,6 +33,16 @@ export default function HomeScreen() {
   const remaining = target - consumed;
   const progress = Math.min(consumed / target, 1);
   const isOverTarget = consumed > target;
+
+  useEffect(() => {
+    // Load health data
+    const loadHealthData = async () => {
+      const data = healthKitService.getMockHealthData();
+      setHealthData(data);
+    };
+    
+    loadHealthData();
+  }, []);
 
   const handleAddCalories = () => {
     const calories = parseInt(calorieInput);
@@ -52,19 +70,27 @@ export default function HomeScreen() {
   };
 
   const getProgressColor = () => {
-    if (todayData?.isFasting) return 'bg-blue-500';
-    if (isOverTarget) return 'bg-red-500';
-    if (progress >= 0.8) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (todayData?.isFasting) return theme.info;
+    if (isOverTarget) return theme.error;
+    if (progress >= 0.8) return theme.warning;
+    return theme.success;
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
-      <ScrollView className="flex-1">
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-          <ThemedText className="text-2xl font-bold mb-1">Today&apos;s Calories</ThemedText>
-          <ThemedText className="text-gray-600 dark:text-gray-400">
+        <View style={{ 
+          paddingHorizontal: spacing.lg, 
+          paddingVertical: spacing.md,
+          backgroundColor: theme.surface,
+          borderBottomWidth: 1,
+          borderBottomColor: theme.borderSecondary,
+        }}>
+          <ThemedText style={[typography.largeTitle, { color: theme.text, marginBottom: spacing.xs }]}>
+            Today
+          </ThemedText>
+          <ThemedText style={[typography.subheadline, { color: theme.textSecondary }]}>
             {new Date().toLocaleDateString('en-US', { 
               weekday: 'long', 
               year: 'numeric', 
@@ -74,35 +100,68 @@ export default function HomeScreen() {
           </ThemedText>
         </View>
 
-        {/* Main Calorie Display */}
-        <View className="p-4">
-          <View className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-4 shadow-sm">
-            <View className="flex-row justify-between items-center mb-4">
-              <ThemedText className="text-3xl font-bold">
+        <View style={{ padding: spacing.lg }}>
+          {/* Main Calorie Display */}
+          <View style={{ 
+            backgroundColor: theme.surface,
+            borderRadius: borderRadius.lg,
+            padding: spacing.xl,
+            marginBottom: spacing.lg,
+            ...shadows.md,
+          }}>
+            <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+              <ThemedText style={[typography.title1, { color: theme.text, marginBottom: spacing.xs }]}>
                 {consumed.toLocaleString()}
               </ThemedText>
-              <ThemedText className="text-lg text-gray-500">
-                / {target.toLocaleString()}
+              <ThemedText style={[typography.headline, { color: theme.textSecondary }]}>
+                of {target.toLocaleString()} calories
               </ThemedText>
             </View>
             
-            {/* Progress Bar */}
-            <View className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-4">
-              <View 
-                className={`h-full ${getProgressColor()}`}
-                style={{ width: `${progress * 100}%` }}
-              />
+            {/* Progress Ring */}
+            <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
+              <View style={{ 
+                width: 200, 
+                height: 200, 
+                borderRadius: 100,
+                borderWidth: 20,
+                borderColor: theme.surfaceSecondary,
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'relative',
+              }}>
+                <View style={{
+                  position: 'absolute',
+                  width: 200,
+                  height: 200,
+                  borderRadius: 100,
+                  borderWidth: 20,
+                  borderColor: getProgressColor(),
+                  borderTopColor: 'transparent',
+                  borderRightColor: 'transparent',
+                  transform: [{ rotate: `${-90 + (progress * 360)}deg` }],
+                }} />
+                <ThemedText style={[typography.title2, { color: theme.text }]}>
+                  {Math.round(progress * 100)}%
+                </ThemedText>
+              </View>
             </View>
             
-            <View className="flex-row justify-between items-center">
-              <ThemedText className={`text-lg font-semibold ${
-                isOverTarget ? 'text-red-600' : 'text-green-600'
-              }`}>
+            <View style={{ alignItems: 'center' }}>
+              <ThemedText style={[typography.headline, { 
+                color: isOverTarget ? theme.error : theme.success,
+                marginBottom: spacing.xs,
+              }]}>
                 {isOverTarget ? `+${Math.abs(remaining)} over` : `${remaining} remaining`}
               </ThemedText>
               {todayData?.isFasting && (
-                <View className="bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full">
-                  <Text className="text-blue-700 dark:text-blue-300 font-medium">
+                <View style={{ 
+                  backgroundColor: theme.info + '20',
+                  paddingHorizontal: spacing.md,
+                  paddingVertical: spacing.xs,
+                  borderRadius: borderRadius.full,
+                }}>
+                  <Text style={{ color: theme.info, fontSize: 13, fontWeight: '600' }}>
                     Fasting Day
                   </Text>
                 </View>
@@ -111,78 +170,209 @@ export default function HomeScreen() {
           </View>
 
           {/* Quick Add Calories */}
-          <View className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-4 shadow-sm">
-            <ThemedText className="text-lg font-semibold mb-3">Quick Add Calories</ThemedText>
+          <View style={{ 
+            backgroundColor: theme.surface,
+            borderRadius: borderRadius.lg,
+            padding: spacing.lg,
+            marginBottom: spacing.lg,
+            ...shadows.sm,
+          }}>
+            <ThemedText style={[typography.title3, { color: theme.text, marginBottom: spacing.md }]}>
+              Quick Add
+            </ThemedText>
             
-            <View className="flex-row space-x-2 mb-3">
+            <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md }}>
               {[100, 200, 300, 500].map((amount) => (
                 <TouchableOpacity
                   key={amount}
                   onPress={() => handleQuickAdd(amount)}
-                  className="flex-1 bg-blue-500 py-2 rounded-lg"
+                  style={{
+                    flex: 1,
+                    backgroundColor: theme.primary,
+                    paddingVertical: spacing.md,
+                    borderRadius: borderRadius.md,
+                    alignItems: 'center',
+                  }}
                 >
-                  <Text className="text-white text-center font-medium">+{amount}</Text>
+                  <Text style={{ color: theme.textInverse, fontSize: 16, fontWeight: '600' }}>
+                    +{amount}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
             
-            <View className="flex-row space-x-2">
+            <View style={{ flexDirection: 'row', gap: spacing.sm }}>
               <TextInput
                 value={calorieInput}
                 onChangeText={setCalorieInput}
                 placeholder="Enter calories"
                 keyboardType="numeric"
-                className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white"
-                placeholderTextColor="#9CA3AF"
+                style={{
+                  flex: 1,
+                  borderWidth: 1,
+                  borderColor: theme.border,
+                  borderRadius: borderRadius.md,
+                  paddingHorizontal: spacing.md,
+                  paddingVertical: spacing.md,
+                  fontSize: 16,
+                  color: theme.text,
+                  backgroundColor: theme.surfaceSecondary,
+                }}
+                placeholderTextColor={theme.textSecondary}
               />
               <TouchableOpacity
                 onPress={handleAddCalories}
-                className="bg-green-500 px-4 py-2 rounded-lg"
+                style={{
+                  backgroundColor: theme.success,
+                  paddingHorizontal: spacing.lg,
+                  paddingVertical: spacing.md,
+                  borderRadius: borderRadius.md,
+                  justifyContent: 'center',
+                }}
               >
-                <Text className="text-white font-medium">Add</Text>
+                <Text style={{ color: theme.textInverse, fontSize: 16, fontWeight: '600' }}>
+                  Add
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Stats Cards */}
-          <View className="flex-row space-x-3 mb-4">
-            <View className="flex-1 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
-              <ThemedText className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+          {/* Stats Grid */}
+          <View style={{ 
+            flexDirection: 'row', 
+            gap: spacing.md, 
+            marginBottom: spacing.lg 
+          }}>
+            <View style={{ 
+              flex: 1,
+              backgroundColor: theme.surface,
+              borderRadius: borderRadius.lg,
+              padding: spacing.lg,
+              ...shadows.sm,
+            }}>
+              <ThemedText style={[typography.footnote, { color: theme.textSecondary, marginBottom: spacing.xs }]}>
                 Daily Target
               </ThemedText>
-              <ThemedText className="text-xl font-bold">
+              <ThemedText style={[typography.title2, { color: theme.text }]}>
                 {target.toLocaleString()}
               </ThemedText>
             </View>
             
-            <View className="flex-1 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
-              <ThemedText className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+            <View style={{ 
+              flex: 1,
+              backgroundColor: theme.surface,
+              borderRadius: borderRadius.lg,
+              padding: spacing.lg,
+              ...shadows.sm,
+            }}>
+              <ThemedText style={[typography.footnote, { color: theme.textSecondary, marginBottom: spacing.xs }]}>
                 TDEE
               </ThemedText>
-              <ThemedText className="text-xl font-bold">
+              <ThemedText style={[typography.title2, { color: theme.text }]}>
                 {tdee ? tdee.toLocaleString() : '--'}
-              </ThemedText>
-            </View>
-            
-            <View className="flex-1 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
-              <ThemedText className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                Current Weight
-              </ThemedText>
-              <ThemedText className="text-xl font-bold">
-                {latestWeight ? `${latestWeight} kg` : '--'}
               </ThemedText>
             </View>
           </View>
 
+          <View style={{ 
+            flexDirection: 'row', 
+            gap: spacing.md, 
+            marginBottom: spacing.lg 
+          }}>
+            <View style={{ 
+              flex: 1,
+              backgroundColor: theme.surface,
+              borderRadius: borderRadius.lg,
+              padding: spacing.lg,
+              ...shadows.sm,
+            }}>
+              <ThemedText style={[typography.footnote, { color: theme.textSecondary, marginBottom: spacing.xs }]}>
+                Current Weight
+              </ThemedText>
+              <ThemedText style={[typography.title2, { color: theme.text }]}>
+                {latestWeight ? `${latestWeight} kg` : '--'}
+              </ThemedText>
+            </View>
+            
+            <View style={{ 
+              flex: 1,
+              backgroundColor: theme.surface,
+              borderRadius: borderRadius.lg,
+              padding: spacing.lg,
+              ...shadows.sm,
+            }}>
+              <ThemedText style={[typography.footnote, { color: theme.textSecondary, marginBottom: spacing.xs }]}>
+                Steps Today
+              </ThemedText>
+              <ThemedText style={[typography.title2, { color: theme.text }]}>
+                {healthData?.steps?.toLocaleString() || '--'}
+              </ThemedText>
+            </View>
+          </View>
+
+          {/* Health Integration */}
+          <View style={{ 
+            backgroundColor: theme.surface,
+            borderRadius: borderRadius.lg,
+            padding: spacing.lg,
+            marginBottom: spacing.lg,
+            ...shadows.sm,
+          }}>
+            <ThemedText style={[typography.title3, { color: theme.text, marginBottom: spacing.md }]}>
+              Health Data
+            </ThemedText>
+            <View style={{ flexDirection: 'row', gap: spacing.md }}>
+              <View style={{ flex: 1 }}>
+                <ThemedText style={[typography.footnote, { color: theme.textSecondary, marginBottom: spacing.xs }]}>
+                  Active Energy
+                </ThemedText>
+                <ThemedText style={[typography.headline, { color: theme.text }]}>
+                  {healthData?.activeEnergy?.toLocaleString() || '--'} cal
+                </ThemedText>
+              </View>
+              <View style={{ flex: 1 }}>
+                <ThemedText style={[typography.footnote, { color: theme.textSecondary, marginBottom: spacing.xs }]}>
+                  Basal Energy
+                </ThemedText>
+                <ThemedText style={[typography.headline, { color: theme.text }]}>
+                  {healthData?.basalEnergy?.toLocaleString() || '--'} cal
+                </ThemedText>
+              </View>
+            </View>
+          </View>
+
           {/* Quick Actions */}
-          <View className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
-            <ThemedText className="text-lg font-semibold mb-3">Quick Actions</ThemedText>
-            <View className="flex-row space-x-3">
-              <TouchableOpacity className="flex-1 bg-blue-500 py-3 rounded-lg">
-                <Text className="text-white text-center font-medium">Log Weight</Text>
+          <View style={{ 
+            backgroundColor: theme.surface,
+            borderRadius: borderRadius.lg,
+            padding: spacing.lg,
+            ...shadows.sm,
+          }}>
+            <ThemedText style={[typography.title3, { color: theme.text, marginBottom: spacing.md }]}>
+              Quick Actions
+            </ThemedText>
+            <View style={{ flexDirection: 'row', gap: spacing.md }}>
+              <TouchableOpacity style={{
+                flex: 1,
+                backgroundColor: theme.primary,
+                paddingVertical: spacing.lg,
+                borderRadius: borderRadius.md,
+                alignItems: 'center',
+              }}>
+                <Text style={{ color: theme.textInverse, fontSize: 16, fontWeight: '600' }}>
+                  Log Weight
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity className="flex-1 bg-green-500 py-3 rounded-lg">
-                <Text className="text-white text-center font-medium">View Progress</Text>
+              <TouchableOpacity style={{
+                flex: 1,
+                backgroundColor: theme.success,
+                paddingVertical: spacing.lg,
+                borderRadius: borderRadius.md,
+                alignItems: 'center',
+              }}>
+                <Text style={{ color: theme.textInverse, fontSize: 16, fontWeight: '600' }}>
+                  View Progress
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
