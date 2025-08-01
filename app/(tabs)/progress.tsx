@@ -283,7 +283,7 @@ export default function ProgressScreen() {
               <View className={`rounded-3xl p-6 pl-3 overflow-hidden ${isDarkMode ? 'border border-gray-600' : ''}`}>
                 <LineChart
                   data={weightChartData}
-                  width={screenWidth - 112} // Adjusted for padding
+                  width={screenWidth - 100} // Adjusted for padding
                   height={240} // Increased height
                   chartConfig={{
                     backgroundColor: 'transparent',
@@ -303,7 +303,7 @@ export default function ProgressScreen() {
                     },
                     propsForBackgroundLines: {
                       strokeDasharray: '5,5',
-                      stroke: '#d1d5db',
+                      stroke: 'transparent',
                       strokeWidth: 1,
                       strokeOpacity: 0.5,
                     },
