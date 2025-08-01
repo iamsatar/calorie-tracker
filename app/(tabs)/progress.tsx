@@ -1,7 +1,7 @@
 import { useCalorieStore } from '@/store/calorieStore';
 import { addDays, getCurrentWeekStart } from '@/utils/dateUtils';
 import React, { useState } from 'react';
-import { Dimensions, ScrollView, Text, View } from 'react-native';
+import { Dimensions, ScrollView, Text, View, useColorScheme } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -15,6 +15,8 @@ interface WeeklyDataItem {
 
 export default function ProgressScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week');
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === 'dark';
   
   const { 
     weightEntries, 
@@ -278,7 +280,7 @@ export default function ProgressScreen() {
               </View>
               
               {/* Enhanced Chart Container */}
-              <View className="bg-gray-50 dark:bg-gray-800 rounded-3xl p-6 overflow-hidden">
+              <View className={`rounded-3xl p-6 pl-3 overflow-hidden ${isDarkMode ? 'border border-gray-600' : ''}`}>
                 <LineChart
                   data={weightChartData}
                   width={screenWidth - 112} // Adjusted for padding
