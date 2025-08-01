@@ -18,6 +18,31 @@ export default function WeightLogScreen() {
   const latestWeight = getLatestWeight();
   const today = formatDate(new Date());
 
+  // Calculate streak function
+  const calculateStreak = useCallback(() => {
+    if (weightEntries.length === 0) return 0;
+    
+    const sortedByDate = [...weightEntries].sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    
+    let streak = 0;
+    const currentDate = new Date();
+    
+    for (let i = 0; i < sortedByDate.length; i++) {
+      const entryDate = new Date(sortedByDate[i].date);
+      const daysDiff = Math.floor((currentDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (daysDiff === i) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
+  }, [weightEntries]);
+
   // Memoized calculations for performance
   const sortedEntries = useMemo(() => {
     return weightEntries
@@ -49,31 +74,7 @@ export default function WeightLogScreen() {
       totalEntries: weightEntries.length,
       streak: calculateStreak(),
     };
-  }, [weightEntries]);
-
-  const calculateStreak = useCallback(() => {
-    if (weightEntries.length === 0) return 0;
-    
-    const sortedByDate = [...weightEntries].sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-    
-    let streak = 0;
-    const today = new Date();
-    
-    for (let i = 0; i < sortedByDate.length; i++) {
-      const entryDate = new Date(sortedByDate[i].date);
-      const daysDiff = Math.floor((today.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
-      
-      if (daysDiff === i) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-    
-    return streak;
-  }, [weightEntries]);
+  }, [weightEntries, calculateStreak]);
 
   const getWeightTrend = useMemo(() => {
     if (weightEntries.length < 3) return null;
