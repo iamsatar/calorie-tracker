@@ -15,10 +15,20 @@ export const formatDayName = (date: Date | string): string => {
   return format(dateObj, 'EEE');
 };
 
-export const getWeekDays = (date: Date = new Date()): Date[] => {
+export const getWeekDays = (date: Date = new Date(), daysToShow: number = 3): Date[] => {
   const start = startOfWeek(date, { weekStartsOn: 1 }); // Monday start
   const end = endOfWeek(date, { weekStartsOn: 1 });
-  return eachDayOfInterval({ start, end });
+  const allDays = eachDayOfInterval({ start, end });
+  
+  // Find the current day's index in the week
+  const today = new Date();
+  const todayIndex = allDays.findIndex(day => isSameDay(day, today));
+  
+  // If today is not in this week, start from the beginning
+  const startIndex = todayIndex >= 0 ? Math.max(0, todayIndex - 1) : 0;
+  
+  // Return only the specified number of days
+  return allDays.slice(startIndex, startIndex + daysToShow);
 };
 
 export const getCurrentWeekStart = (): string => {
