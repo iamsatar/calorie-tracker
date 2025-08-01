@@ -477,7 +477,7 @@ export default function SettingsScreen() {
             
             <View className="space-y-4">
               {/* BMI Card */}
-              <View className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6">
+              <View className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6 mb-2">
                 <View className="flex-row items-center justify-between mb-4">
                   <Text className="text-lg font-bold text-gray-900 dark:text-white">
                     Body Mass Index (BMI)
