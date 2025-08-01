@@ -277,7 +277,7 @@ export default function SettingsScreen() {
 
               {/* Gender Selection */}
               <View>
-                <Text className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-4">
+                <Text className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mt-4 mb-2">
                   Gender
                 </Text>
                                 <View className="flex-row space-x-3 gap-2">
@@ -341,7 +341,7 @@ export default function SettingsScreen() {
 
               {/* Height Input */}
               <View>
-                <Text className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-4">
+                <Text className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mt-4 mb-2">
                   Height
                 </Text>
                 <View className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-600">
@@ -371,7 +371,7 @@ export default function SettingsScreen() {
 
               {/* Weight Input */}
               <View>
-                <Text className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-4">
+                <Text className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mt-4 mb-2">
                   Weight
                 </Text>
                 <View className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-600">
@@ -401,7 +401,7 @@ export default function SettingsScreen() {
 
               {/* Activity Level */}
               <View>
-                <Text className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-4">
+                <Text className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-2 mt-4">
                   Activity Level
                 </Text>
                 <View className="space-y-3">
@@ -409,7 +409,7 @@ export default function SettingsScreen() {
                     <TouchableOpacity
                       key={level.key}
                       onPress={() => setProfile(prev => ({ ...prev, activityLevel: level.key as any }))}
-                      className={`p-5 rounded-2xl border-2 ${
+                      className={`p-5 rounded-2xl border-2 mb-1.5 ${
                         profile.activityLevel === level.key
                           ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-500'
                           : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
