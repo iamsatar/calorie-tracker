@@ -227,25 +227,62 @@ export default function ProgressScreen() {
             </View>
           </View>
 
-          {/* Weight Trend Chart */}
+          {/* Weight Trend Chart - Enhanced */}
           {weightData.length > 1 && (
             <View className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-700 p-6 mb-6">
+              {/* Header with Period Selection */}
               <View className="flex-row items-center justify-between mb-6">
-                <Text className="text-2xl font-black text-gray-900 dark:text-white">
-                  Weight Trend
-                </Text>
-                <View className="bg-purple-100 dark:bg-purple-900/30 px-3 py-1 rounded-full">
+                <View>
+                  <Text className="text-2xl font-black text-gray-900 dark:text-white mb-1">
+                    Weight Progress
+                  </Text>
+                  <Text className="text-gray-500 dark:text-gray-400 text-sm">
+                    Track your weight journey over time
+                  </Text>
+                </View>
+                <View className="bg-purple-50 dark:bg-purple-900/20 px-4 py-2 rounded-2xl border border-purple-200 dark:border-purple-700">
                   <Text className="text-purple-600 dark:text-purple-400 text-sm font-bold">
-                    14 Days
+                    📈 {weightData.length} entries
+                  </Text>
+                </View>
+              </View>
+
+              {/* Weight Summary Stats */}
+              <View className="flex-row justify-between mb-6">
+                <View className="flex-1 bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 mr-2 border border-blue-100 dark:border-blue-800">
+                  <Text className="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase mb-1">
+                    Current
+                  </Text>
+                  <Text className="text-2xl font-black text-blue-700 dark:text-blue-300">
+                    {latestWeight?.toFixed(1) || '--'} kg
+                  </Text>
+                </View>
+                
+                <View className="flex-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-4 mx-1 border border-emerald-100 dark:border-emerald-800">
+                  <Text className="text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase mb-1">
+                    Change
+                  </Text>
+                  <Text className={`text-2xl font-black ${totalWeightLoss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                    {totalWeightLoss >= 0 ? '-' : '+'}{Math.abs(totalWeightLoss).toFixed(1)} kg
+                  </Text>
+                </View>
+
+                <View className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-4 ml-2 border border-purple-100 dark:border-purple-800">
+                  <Text className="text-purple-600 dark:text-purple-400 text-xs font-bold uppercase mb-1">
+                    Goal
+                  </Text>
+                  <Text className="text-2xl font-black text-purple-700 dark:text-purple-300">
+                    {weightEntries.length > 0 ? (weightEntries[0].weight - 10).toFixed(1) : '--'} kg
                   </Text>
                 </View>
               </View>
               
-              <View className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-4 overflow-hidden">
+              {/* Enhanced Chart Container */}
+              <View className="bg-gray-50 dark:bg-gray-800 rounded-3xl p-6 overflow-hidden">
                 <LineChart
                   data={weightChartData}
-                  width={screenWidth - 80}
-                  height={200}
+                  width={screenWidth - 112} // Adjusted for padding
+                  height={240} // Increased height
                   chartConfig={{
                     backgroundColor: 'transparent',
                     backgroundGradientFrom: 'transparent',
@@ -254,25 +291,176 @@ export default function ProgressScreen() {
                     color: (opacity = 1) => `rgba(139, 92, 246, ${opacity})`,
                     labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`,
                     style: {
-                      borderRadius: 16,
+                      borderRadius: 24,
                     },
                     propsForDots: {
-                      r: '4',
-                      strokeWidth: '2',
-                      stroke: '#8b5cf6',
+                      r: '6',
+                      strokeWidth: '3',
+                      stroke: '#ffffff',
                       fill: '#8b5cf6',
                     },
                     propsForBackgroundLines: {
-                      strokeDasharray: '', // solid background lines
-                      stroke: '#e5e7eb',
+                      strokeDasharray: '5,5',
+                      stroke: '#d1d5db',
                       strokeWidth: 1,
+                      strokeOpacity: 0.5,
                     },
+                    fillShadowGradient: '#8b5cf6',
+                    fillShadowGradientOpacity: 0.1,
+                    fillShadowGradientFrom: '#8b5cf6',
+                    fillShadowGradientFromOpacity: 0.2,
+                    fillShadowGradientTo: '#8b5cf6',
+                    fillShadowGradientToOpacity: 0.0,
                   }}
                   bezier
+                  withShadow
+                  withInnerLines
+                  withOuterLines
+                  withVerticalLines
+                  withHorizontalLines
                   style={{
-                    borderRadius: 16,
+                    borderRadius: 24,
+                    marginVertical: 8,
                   }}
                 />
+                
+                {/* Enhanced Chart Legend */}
+                <View className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
+                  {/* Legend Title */}
+                  <Text className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                    Chart Legend
+                  </Text>
+                  
+                  {/* Legend Items Grid */}
+                  <View className="flex-row flex-wrap justify-between">
+                    {/* Weight Trend Line */}
+                    <View className="flex-row items-center mb-3 w-[48%]">
+                      <View className="w-4 h-[3px] bg-purple-500 rounded-full mr-3"></View>
+                      <View className="flex-1">
+                        <Text className="text-gray-700 dark:text-gray-300 text-sm font-semibold">
+                          Weight Trend
+                        </Text>
+                        <Text className="text-gray-500 dark:text-gray-400 text-xs">
+                          Daily measurements
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    {/* Data Points */}
+                    <View className="flex-row items-center mb-3 w-[48%]">
+                      <View className="w-4 h-4 bg-purple-500 rounded-full border-2 border-white mr-3 shadow-sm"></View>
+                      <View className="flex-1">
+                        <Text className="text-gray-700 dark:text-gray-300 text-sm font-semibold">
+                          Data Points
+                        </Text>
+                        <Text className="text-gray-500 dark:text-gray-400 text-xs">
+                          Recorded weights
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    {/* Trend Fill */}
+                    <View className="flex-row items-center mb-3 w-[48%]">
+                      <View className="w-4 h-4 bg-purple-200 dark:bg-purple-800 rounded mr-3 opacity-60"></View>
+                      <View className="flex-1">
+                        <Text className="text-gray-700 dark:text-gray-300 text-sm font-semibold">
+                          Trend Area
+                        </Text>
+                        <Text className="text-gray-500 dark:text-gray-400 text-xs">
+                          Progress visualization
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    {/* Grid Lines */}
+                    <View className="flex-row items-center mb-3 w-[48%]">
+                      <View className="w-4 h-[1px] border-t border-dashed border-gray-400 mr-3"></View>
+                      <View className="flex-1">
+                        <Text className="text-gray-700 dark:text-gray-300 text-sm font-semibold">
+                          Grid Lines
+                        </Text>
+                        <Text className="text-gray-500 dark:text-gray-400 text-xs">
+                          Reference guides
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  
+                  {/* Chart Info Footer */}
+                  <View className="flex-row justify-between items-center mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+                    <View className="flex-row items-center">
+                      <View className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></View>
+                      <Text className="text-gray-600 dark:text-gray-400 text-sm">
+                        {weightData.length} entries tracked
+                      </Text>
+                    </View>
+                    <View className="flex-row items-center">
+                      <View className="w-2 h-2 bg-blue-500 rounded-full mr-2"></View>
+                      <Text className="text-gray-500 dark:text-gray-400 text-xs">
+                        Updated {new Date().toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </Text>
+                    </View>
+                  </View>
+                  
+                  {/* Quick Stats Summary */}
+                  <View className="mt-4 bg-gray-50 dark:bg-gray-700 rounded-2xl p-4">
+                    <View className="flex-row justify-between">
+                      <View className="items-center flex-1">
+                        <Text className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">
+                          Range
+                        </Text>
+                        <Text className="text-lg font-black text-gray-900 dark:text-white">
+                          {weightData.length > 1 ? 
+                            `${Math.min(...weightData.map(w => w.weight)).toFixed(1)} - ${Math.max(...weightData.map(w => w.weight)).toFixed(1)} kg`
+                            : '--'
+                          }
+                        </Text>
+                      </View>
+                      
+                      <View className="w-px bg-gray-200 dark:bg-gray-600 mx-4"></View>
+                      
+                      <View className="items-center flex-1">
+                        <Text className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">
+                          Trend
+                        </Text>
+                        <View className="flex-row items-center">
+                          <Text className={`text-lg font-black ${
+                            totalWeightLoss > 0 ? 'text-emerald-500' : 
+                            totalWeightLoss < 0 ? 'text-red-500' : 'text-gray-500'
+                          }`}>
+                            {totalWeightLoss > 0 ? '↓' : totalWeightLoss < 0 ? '↑' : '→'}
+                          </Text>
+                          <Text className="text-lg font-black text-gray-900 dark:text-white ml-1">
+                            {totalWeightLoss === 0 ? 'Stable' : 
+                             totalWeightLoss > 0 ? 'Losing' : 'Gaining'}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* Progress Insights */}
+              <View className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border border-purple-100 dark:border-purple-800">
+                <View className="flex-row items-center mb-2">
+                  <Text className="text-lg mr-2">📊</Text>
+                  <Text className="text-purple-700 dark:text-purple-300 font-bold">
+                    Progress Insight
+                  </Text>
+                </View>
+                <Text className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {totalWeightLoss > 0 
+                    ? `Great progress! You&apos;ve lost ${totalWeightLoss.toFixed(1)} kg. Keep up the consistent effort to reach your goal.`
+                    : totalWeightLoss < 0
+                    ? `You&apos;ve gained ${Math.abs(totalWeightLoss).toFixed(1)} kg. Consider reviewing your calorie intake and activity levels.`
+                    : 'Your weight has remained stable. Adjust your plan if you have specific goals in mind.'
+                  }
+                </Text>
               </View>
             </View>
           )}
