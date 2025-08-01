@@ -542,7 +542,7 @@ export default function SettingsScreen() {
                   { key: 'maintain', label: 'Maintain Weight', value: calorieGoals.maintain, subtitle: 'Current weight', color: 'bg-emerald-500', emoji: '⚖️' },
                   { key: 'gain', label: 'Weight Gain', value: calorieGoals.gain, subtitle: '+1 lb/week', color: 'bg-blue-500', emoji: '📈' },
                 ].map((goal) => (
-                  <View key={goal.key} className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-4">
+                  <View key={goal.key} className="bg-gray-50 dark:bg-gray-700 rounded-2xl p-4 mb-2">
                     <View className="flex-row items-center justify-between">
                       <View className="flex-row items-center flex-1">
                         <View className={`w-12 h-12 ${goal.color} rounded-2xl items-center justify-center mr-4`}>
