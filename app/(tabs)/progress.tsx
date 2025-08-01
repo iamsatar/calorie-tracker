@@ -51,7 +51,7 @@ export default function ProgressScreen() {
     ),
     datasets: [{
       data: weightData.map(entry => entry.weight),
-      color: (opacity = 1) => `rgba(139, 92, 246, ${opacity})`,
+      color: (opacity = 0.5) => `rgba(134, 65, 244, ${opacity})`,
       strokeWidth: 3,
     }],
   };
@@ -286,9 +286,14 @@ export default function ProgressScreen() {
                   width={screenWidth - 100} // Adjusted for padding
                   height={240} // Increased height
                   chartConfig={{
-                    backgroundColor: 'transparent',
-                    backgroundGradientFrom: 'transparent',
-                    backgroundGradientTo: 'transparent',
+                    backgroundGradientFrom: '#ffffff', // or 'transparent'
+                    backgroundGradientTo: '#ffffff',   // or match your view bg
+                    backgroundColor: '#ffffff',        // optional; for internal fill
+                    ...(isDarkMode ? {
+                      backgroundGradientFrom: '#1f2937', // dark-gray-800
+                      backgroundGradientTo: '#1f2937',   // dark-gray-800
+                      backgroundColor: '#1f2937',        // dark-gray-800
+                    } : {}),
                     decimalPlaces: 1,
                     color: (opacity = 1) => `rgba(139, 92, 246, ${opacity})`,
                     labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`,
