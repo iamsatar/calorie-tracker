@@ -316,7 +316,7 @@ export default function HomeScreen() {
         onRequestClose={() => setShowCalorieModal(false)}
       >
         <View className="flex-1 bg-black/50 justify-end">
-          <View className="bg-white dark:bg-gray-800 rounded-t-3xl overflow-hidden">
+          <View className="bg-white dark:bg-gray-800 rounded-t-3xl overflow-hidden h-[85%]">
             <View className="p-6 border-b border-gray-200 dark:border-gray-700">
               <View className="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full self-center mb-6" />
               
@@ -337,7 +337,7 @@ export default function HomeScreen() {
               <View className="flex-row space-x-3">
                 <TouchableOpacity
                   onPress={() => setShowCalorieModal(false)}
-                  className="bg-gray-200 dark:bg-gray-700 rounded-2xl p-4 flex-1"
+                  className="bg-gray-200 dark:bg-gray-700 rounded-2xl p-4 flex-1 mr-2"
                 >
                   <Text className="text-gray-900 dark:text-white text-lg font-bold text-center">
                     Cancel
