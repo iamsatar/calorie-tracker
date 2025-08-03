@@ -33,9 +33,9 @@ export const NumericKeyboard: React.FC<NumericKeyboardProps> = ({
     if (key === 'C') {
       return 'bg-red-500';
     } else if (key === '⌫') {
-      return 'bg-gray-500';
+      return 'bg-gray-300 dark:bg-gray-700';
     } else {
-      return 'bg-blue-500';
+      return 'dark:bg-gray-700 bg-white';
     }
   };
 
@@ -47,10 +47,10 @@ export const NumericKeyboard: React.FC<NumericKeyboardProps> = ({
             <TouchableOpacity
               key={key}
               onPress={() => handleKeyPress(key)}
-              className={`${getKeyStyle(key)} rounded-2xl shadow-lg flex-1 mx-1 h-16 items-center justify-center`}
+              className={`${getKeyStyle(key)} rounded-2xl border border-gray-200 dark:border-gray-700 flex-1 mx-1 h-16 items-center justify-center`}
               activeOpacity={0.7}
             >
-              <Text className="text-white text-2xl font-bold">
+              <Text className={`text-gray-900 dark:text-white text-2xl font-bold ${key === 'C' ? 'text-white' : ''}`}>
                 {key}
               </Text>
             </TouchableOpacity>
