@@ -130,8 +130,8 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+    <SafeAreaView className="flex-1 bg-purple-600">
+      <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-900" showsVerticalScrollIndicator={false}>
         {/* Hero Header */}
         <View className="bg-purple-600 dark:bg-purple-700 px-6 pt-8 pb-12">
           <View className="flex-row items-center justify-between mb-6">
